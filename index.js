@@ -1,4 +1,4 @@
-console.log("joined");
+const apiKey = "943216857682093a1e6ba773a9600c97";
 const timeContainer = document.querySelector("#time");
 const date = new Date();
 const day = date.getDay();
@@ -14,68 +14,56 @@ const week = [
 ];
 timeContainer.innerHTML = `${week[day]}, ${time}`;
 
-const city = prompt("Enter a city...").toLowerCase();
-
-let weather = {
-  paris: {
-    temp: 19.7,
-    humidity: 80,
-  },
-  tokyo: {
-    temp: 17.3,
-    humidity: 50,
-  },
-  lisbon: {
-    temp: 30.2,
-    humidity: 20,
-  },
-  "san francisco": {
-    temp: 20.9,
-    humidity: 100,
-  },
-  moscow: {
-    temp: -5,
-    humidity: 20,
-  },
-};
-
-if (weather[`${city.toLowerCase()}`]) {
-  alert(
-    `It is currently ${Math.round(
-      weather[`${city}`].temp
-    )}°C in ${city} with a humidity of ${weather[`${city}`].humidity}%`
-  );
-} else {
-  alert(
-    `Sorry, we don't know the weather for this city, try going to https://www.google.com/search?q=weather+${city}`
-  );
-}
-
 const searchForm = document.querySelector("#search-from");
 const currentCity = document.querySelector("#current-city");
-
+const currentLocationBtn = document.querySelector("#current-location");
 searchForm.addEventListener("submit", (e) => handleSearch(e));
 
+const temp = document.querySelector("#temp");
+
 function handleSearch(e) {
-  e.preventDefault();
   let city = document.querySelector("#search-input").value;
-  currentCity.innerHTML = city;
+  e.preventDefault();
+  axios
+    .get(
+      `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=${apiKey}`
+    )
+    .then((res) => changeHeading(res));
 }
 
-const temp = document.querySelector("#temp");
-const degree = document.querySelector("#degree");
-const convertLink = document.querySelector(".farenheit");
+function changeHeading(res) {
+  currentCity.innerHTML = res.data.name;
+  temp.innerHTML = Math.ceil(res.data.main.temp);
+}
+currentLocationBtn.addEventListener("click", handleCurrentLocation);
 
-convertLink.addEventListener("click", () => {
-  if (convertLink.className === "farenheit") {
-    temp.innerHTML = ((+temp.innerHTML * 9) / 5 + 32).toFixed(1);
-    degree.innerHTML = "'F";
-    convertLink.className = "celcius";
-    convertLink.innerHTML = "Convert to Celcius";
-  } else {
-    temp.innerHTML = (((+temp.innerHTML - 32) * 5) / 9).toFixed(1);
-    degree.innerHTML = "'C";
-    convertLink.className = "farenheit";
-    convertLink.innerHTML = "Convert to Farenheit";
-  }
-});
+function handleCurrentLocation() {
+  navigator.geolocation.getCurrentPosition(handlePosition);
+}
+
+function handlePosition(position) {
+  let lat = position.coords.latitude;
+  let lon = position.coords.longitude;
+
+  axios
+    .get(
+      `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}`
+    )
+    .then((res) => changeHeading(res));
+}
+// const degree = document.querySelector("#degree");
+// const convertLink = document.querySelector(".farenheit");
+
+// convertLink.addEventListener("click", () => {
+//   if (convertLink.className === "farenheit") {
+//     temp.innerHTML = ((+temp.innerHTML * 9) / 5 + 32).toFixed(1);
+//     degree.innerHTML = "'F";
+//     convertLink.className = "celcius";
+//     convertLink.innerHTML = "Convert to Celcius";
+//   } else {
+//     temp.innerHTML = (((+temp.innerHTML - 32) * 5) / 9).toFixed(1);
+//     degree.innerHTML = "'C";
+//     convertLink.className = "farenheit";
+//     convertLink.innerHTML = "Convert to Farenheit";
+//   }
+// });

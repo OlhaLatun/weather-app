@@ -9,7 +9,7 @@
   max-width: 476px;
   margin: 0 auto;
   padding: 20px;
-  background-image: url(../assets/cold-bg\ 1.png);
+  background-image: url(./assets/cold-bg\ 1.png);
   background-position: center;
   background-size: cover;
   background-repeat: no-repeat;
@@ -93,6 +93,13 @@
 }
 
 #convert-link {
+  border: none;
+  background: none;
+  color: blue;
+  cursor: pointer;
+}
+
+#current-location {
   border: none;
   background: none;
   color: blue;
